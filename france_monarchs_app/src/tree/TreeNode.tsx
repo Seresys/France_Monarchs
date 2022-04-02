@@ -2,26 +2,29 @@ import { FC } from "react";
 import { Person } from "../generated/graphql";
 import { Headpiece } from "../headpiece/Headpiece";
 import { getPersonById } from "../utils/helpers";
+import { FamilyTree } from "./Tree";
 
 interface Props {
-  person: Person;
+  tree: FamilyTree;
   persons: Person[];
 }
 
-export const TreeNode: FC<Props> = ({ person, persons }) => {
+export const TreeNode: FC<Props> = ({ tree, persons }) => {
+  const person = getPersonById(tree.id, persons) || {
+    id: tree.id,
+    label: tree.id.replace("_", " "),
+  };
+
   return (
     <>
+      <Headpiece person={person}></Headpiece>
       <div>
-        <Headpiece person={person}></Headpiece>
-      </div>
-      {person.child?.map((childId) => {
-        const child = getPersonById(childId, persons);
-        if (child) {
+        {tree.child.map((child) => {
           return (
-            <TreeNode person={child} persons={persons} key={childId}></TreeNode>
+            <TreeNode tree={child} persons={persons} key={child.id}></TreeNode>
           );
-        }
-      })}
+        })}
+      </div>
     </>
   );
 };

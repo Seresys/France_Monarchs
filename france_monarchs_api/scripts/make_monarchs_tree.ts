@@ -265,10 +265,10 @@ const buildPersonInfos = async (
   spouse.forEach(async (p) => await buildPersonInfos(p, propagationLevel + 1));
 
   const links = {
-    father,
-    mother,
-    child,
-    spouse,
+    father: father?.replace(" ", "_"),
+    mother: mother?.replace(" ", "_"),
+    child: child.map((c) => c?.replace(" ", "_")),
+    spouse: spouse.map((s) => s?.replace(" ", "_")),
   };
   const person = {
     ...(await getOnePersonGeneralInfos(id)),

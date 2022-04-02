@@ -5,6 +5,7 @@
     "lib": ["esnext"],
     "strict": true,
     "sourceMap": true,
+    "outDir": "../dist",
     "esModuleInterop": true,
     "moduleResolution": "node"
   },
@@ -15,3 +16,4 @@
   },
   "include": ["./*.ts", "../types/*.ts"]
 }
+

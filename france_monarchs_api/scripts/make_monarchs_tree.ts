@@ -1,7 +1,7 @@
 import { Literal, Term, NamedNode } from "@rdfjs/types/data-model";
 import ParsingClient from "sparql-http-client/ParsingClient";
 import fs from "fs-extra";
-import { King, Person } from "../types/person";
+import { Person } from "../types/person";
 
 const MAX_PROPAGATION_LEVEL = 1;
 
@@ -180,8 +180,10 @@ const getOnePersonGeneralInfos = async (id: string) => {
     deathDate: buildDate(dateInfo.deathDate),
     deathPlace: getValue(generalInfo.deathPlace),
     burialPlace: getValue(generalInfo.burialPlace),
-    activeYearsStartYear: getValue(dateInfo.activeYearsStartYear),
-    activeYearsEndYear: getValue(dateInfo.activeYearsEndYear),
+    activeYearsStartYear: parseInt(
+      getValue(dateInfo.activeYearsStartYear) ?? "0"
+    ),
+    activeYearsEndYear: parseInt(getValue(dateInfo.activeYearsEndYear) ?? "0"),
   };
 };
 
@@ -189,10 +191,7 @@ const getOnePersonGeneralInfos = async (id: string) => {
  * Files handling
  */
 
-const writePersonFile = async (
-  id: string,
-  obj: Person | King
-): Promise<void> => {
+const writePersonFile = async (id: string, obj: Person): Promise<void> => {
   try {
     await fs.outputJson(`./assets/persons/${id}.json`, obj);
     console.log("Extract done for " + id);
@@ -331,3 +330,4 @@ const buildTrees = async () => {
 };
 
 buildTrees();
+

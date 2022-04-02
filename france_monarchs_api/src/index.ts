@@ -42,37 +42,7 @@ const typeDefs = gql`
     format: String
   }
 
-  interface PersonCommon {
-    id: String!
-    label: String!
-    abstract: String
-    birthDate: HistoricDate
-    birthPlace: String
-    deathDate: HistoricDate
-    deathPlace: String
-    burialPlace: String
-    mother: String
-    father: String
-    child: [String]
-    spouse: [String]
-  }
-
-  type Human implements PersonCommon {
-    id: String!
-    label: String!
-    abstract: String
-    birthDate: HistoricDate
-    birthPlace: String
-    deathDate: HistoricDate
-    deathPlace: String
-    burialPlace: String
-    mother: String
-    father: String
-    child: [String]
-    spouse: [String]
-  }
-
-  type King implements PersonCommon {
+  type Person {
     id: String!
     label: String!
     abstract: String
@@ -90,8 +60,6 @@ const typeDefs = gql`
     activeYearsStartYear: Int
     activeYearsEndYear: Int
   }
-
-  union Person = Human | King
 
   type Query {
     lines: [Line]
@@ -127,16 +95,6 @@ const resolvers = {
       return persons;
     },
   },
-  King: {
-    __isTypeOf: (obj: any) => {
-      return obj.activeYearsStartYear || obj.activeYearsEndYear;
-    },
-  },
-  Human: {
-    __isTypeOf: (obj: any) => {
-      return !obj.activeYearsStartYear && !obj.activeYearsEndYear;
-    },
-  },
   Date: dateScalar,
 };
 
@@ -160,3 +118,4 @@ const buildSchema = async () => {
 };
 
 buildSchema();
+

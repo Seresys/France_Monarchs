@@ -6,16 +6,14 @@ To get a local copy up and running follow these simple example steps.
 
 You'll need either yarn (recommended) or npm to start the project.
 
-- npm
-  [npm official documentation](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+- npm ([npm official documentation](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm))
   ```sh
   npm install npm@latest -g
   ```
 - yarn
-
-```sh
-npm install --global yarn
-```
+  ```sh
+  npm install --global yarn
+  ```
 
 ### Installation and set up
 

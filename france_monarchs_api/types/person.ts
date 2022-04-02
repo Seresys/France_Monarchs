@@ -4,7 +4,8 @@ type HistoricDate = {
   precise: boolean;
   format: DateFormat;
 };
-type Human = {
+
+export type Person = {
   id: string;
   label: string;
   abstract?: string;
@@ -17,12 +18,9 @@ type Human = {
   child?: string[];
   spouse?: string[];
   successor?: string[];
-};
-export type King = Human & {
   house?: string;
   title?: string;
   activeYearsStartYear?: number;
   activeYearsEndYear?: number;
 };
 
-export type Person = Human | King;

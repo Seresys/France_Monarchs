@@ -1,0 +1,32 @@
+query Tree {
+  persons {
+    id
+    label
+    abstract
+    birthDate {
+      date
+      precise
+      format
+    }
+    birthPlace
+    deathDate {
+      date
+      precise
+      format
+    }
+    deathPlace
+    burialPlace
+    mother
+    father
+    child
+    spouse
+    activeYearsStartYear
+    activeYearsEndYear
+    house
+    title
+  }
+  lines {
+    label
+    suite
+  }
+}

@@ -1,0 +1,69 @@
+"""Date custom scalar type"""
+scalar Date
+
+type Line {
+  label: String
+  suite: [String]
+}
+
+type HistoricDate {
+  date: Date
+  precise: Boolean
+  format: String
+}
+
+interface PersonCommon {
+  id: String!
+  label: String!
+  abstract: String
+  birthDate: HistoricDate
+  birthPlace: String
+  deathDate: HistoricDate
+  deathPlace: String
+  burialPlace: String
+  mother: String
+  father: String
+  child: [String]
+  spouse: [String]
+}
+
+type Human implements PersonCommon {
+  id: String!
+  label: String!
+  abstract: String
+  birthDate: HistoricDate
+  birthPlace: String
+  deathDate: HistoricDate
+  deathPlace: String
+  burialPlace: String
+  mother: String
+  father: String
+  child: [String]
+  spouse: [String]
+}
+
+type King implements PersonCommon {
+  id: String!
+  label: String!
+  abstract: String
+  birthDate: HistoricDate
+  birthPlace: String
+  deathDate: HistoricDate
+  deathPlace: String
+  burialPlace: String
+  mother: String
+  father: String
+  child: [String]
+  spouse: [String]
+  house: String
+  title: String
+  activeYearsStartYear: Int
+  activeYearsEndYear: Int
+}
+
+union Person = Human | King
+
+type Query {
+  lines: [Line]
+  persons: [Person]
+}

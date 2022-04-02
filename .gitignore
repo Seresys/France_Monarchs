@@ -1,0 +1,15 @@
+# API
+/france_monarchs_api/dist
+/france_monarchs_api/node_modules/
+/france_monarchs_api/yarn-debug.log*
+/france_monarchs_api/yarn-error.log*
+
+# App
+/france_monarchs_app/node_modules/
+/france_monarchs_app/yarn-debug.log*
+/france_monarchs_app/yarn-error.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.DS_Store

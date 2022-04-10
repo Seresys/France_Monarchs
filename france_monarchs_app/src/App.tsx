@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import "./App.css";
-import { ErrorBoundary } from "./components/ErrorBoundary";
-import { Loader } from "./components/Loader";
-import { Tree } from "./tree/Tree";
+import { ErrorBoundary } from "./components/stateHandling/ErrorBoundary";
+import { Loader } from "./components/stateHandling/Loader";
+import { Tree } from "./components/tree/Tree";
 
 const App = () => {
   return (

@@ -1,12 +1,17 @@
-import { Loader } from "../components/Loader";
-import { Line, Person, useTreeQuery } from "../generated/graphql";
+import { Loader } from "../stateHandling/Loader";
+import { Line, Person, useTreeQuery } from "../../generated/graphql";
 import { TreeNode } from "./TreeNode";
-import { getPersonById } from "../utils/helpers";
+import { getPersonById } from "../../utils/helpers";
 
 export type FamilyTree = {
   id: string;
+  spouse?: string[];
   child: FamilyTree[];
 };
+
+/*
+ * Builder
+ */
 
 const buildTree = (line: Line, persons: Person[]) => {
   const usedPersons: string[] = [];
@@ -30,12 +35,14 @@ const buildTree = (line: Line, persons: Person[]) => {
 
   const buildTreeFromFather = (id: string): FamilyTree => {
     const currentPerson = getPersonById(id, persons);
+    const spouse = (currentPerson?.spouse ?? []) as string[];
 
     usedPersons.push(id);
 
     if (currentPerson?.child) {
       return {
         id,
+        spouse,
         child: (
           currentPerson.child.filter(
             (c) => c && getPersonById(c, persons)
@@ -48,6 +55,7 @@ const buildTree = (line: Line, persons: Person[]) => {
 
     return {
       id,
+      spouse,
       child: [],
     };
   };
@@ -100,6 +108,10 @@ const buildTree = (line: Line, persons: Person[]) => {
   return trees;
 };
 
+/*
+ * Component
+ */
+
 export const Tree = () => {
   const [result, reexecuteQuery] = useTreeQuery();
   const { data, fetching, error } = result;
@@ -119,7 +131,7 @@ export const Tree = () => {
 
   if (neustrianLine) {
     const trees = buildTree(neustrianLine, persons);
-
+    console.log({ trees });
     return (
       <>
         {trees.map((t) => (

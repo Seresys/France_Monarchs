@@ -5,23 +5,23 @@ import { getPersonById } from "../utils/helpers";
 import { FamilyTree } from "./Tree";
 
 interface Props {
-  tree: FamilyTree;
+  node: FamilyTree;
   persons: Person[];
 }
 
-export const TreeNode: FC<Props> = ({ tree, persons }) => {
-  const person = getPersonById(tree.id, persons) || {
-    id: tree.id,
-    label: tree.id.replace("_", " "),
+export const TreeNode: FC<Props> = ({ node, persons }) => {
+  const person = getPersonById(node.id, persons) || {
+    id: node.id,
+    label: node.id.replace("_", " "),
   };
 
   return (
     <>
       <Headpiece person={person}></Headpiece>
       <div>
-        {tree.child.map((child) => {
+        {node.child.map((child) => {
           return (
-            <TreeNode tree={child} persons={persons} key={child.id}></TreeNode>
+            <TreeNode node={child} persons={persons} key={child.id}></TreeNode>
           );
         })}
       </div>

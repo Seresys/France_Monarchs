@@ -54,7 +54,7 @@ You should now be able to test your GraphQL request on [http://localhost:4000/](
 If you need to generate GraphQL schema:
 
 ```sh
-yarn relay-compiler
+yarn codegen
 ```
 
 ## Contributing

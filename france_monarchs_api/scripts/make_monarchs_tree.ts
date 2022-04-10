@@ -224,52 +224,68 @@ const isPersonExists = async (id: string): Promise<boolean> => {
  * Tree build
  */
 
+const buildFamily = (
+  fetchFamily: (string | undefined)[],
+  existingFamily?: string[],
+  knownFamily?: string
+): string[] => {
+  return [
+    ...new Set([
+      ...((fetchFamily.filter(Boolean) ?? []) as string[]),
+      ...(existingFamily ?? []),
+      ...(knownFamily ? [knownFamily.replace(" ", "_")] : []),
+    ]),
+  ];
+};
+
 const buildPersonInfos = async (
   id?: string,
-  propagationLevel: number = MAX_PROPAGATION_LEVEL
+  propagationLevel: number = MAX_PROPAGATION_LEVEL,
+  knownFamily?: { knownChild?: string; knownSpouse?: string }
 ) => {
-  if (
-    !id ||
-    (await isPersonExists(id)) ||
-    propagationLevel > MAX_PROPAGATION_LEVEL
-  ) {
-    return;
-  }
-
-  const outputEmptyPerson = () => {
-    const formatted_id = id.replace(" ", "_");
-
-    writePersonFile(formatted_id, { id: formatted_id, label: id });
-  };
-
-  if (id.includes(" ")) {
-    outputEmptyPerson();
+  if (!id || propagationLevel > MAX_PROPAGATION_LEVEL || id.includes(" ")) {
     return;
   }
 
   const familyInfos = await client.query.select(getFamilyInfosQuery(id));
 
   if (familyInfos.length === 0) {
-    outputEmptyPerson();
     return;
   }
+
+  const readData = (await isPersonExists(id))
+    ? await fs.readJson(`./assets/persons/${id}.json`)
+    : {
+        child: [],
+        spouse: [],
+      };
 
   const father = getResourceValue(familyInfos[0].father);
   const mother = getResourceValue(familyInfos[0].mother);
   const child = getValues(familyInfos.map((info) => info.child));
   const spouse = getValues(familyInfos.map((info) => info.spouse));
 
-  await buildPersonInfos(mother, propagationLevel + 1);
-  await buildPersonInfos(father, propagationLevel + 1);
+  await buildPersonInfos(mother, propagationLevel + 1, {
+    knownChild: id.replace(" ", "_"),
+  });
+  await buildPersonInfos(father, propagationLevel + 1, {
+    knownChild: id.replace(" ", "_"),
+  });
   child.forEach(async (p) => await buildPersonInfos(p, propagationLevel + 1));
-  spouse.forEach(async (p) => await buildPersonInfos(p, propagationLevel + 1));
+  spouse.forEach(
+    async (p) =>
+      await buildPersonInfos(p, propagationLevel + 1, {
+        knownSpouse: id.replace(" ", "_"),
+      })
+  );
 
   const links = {
     father: father?.replace(" ", "_"),
     mother: mother?.replace(" ", "_"),
-    child: child.map((c) => c?.replace(" ", "_")),
-    spouse: spouse.map((s) => s?.replace(" ", "_")),
+    child: buildFamily(child, readData.child, knownFamily?.knownChild),
+    spouse: buildFamily(spouse, readData.spouse, knownFamily?.knownSpouse),
   };
+
   const person = {
     ...(await getOnePersonGeneralInfos(id)),
     ...links,

@@ -9,34 +9,95 @@ export type FamilyTree = {
 };
 
 const buildTree = (line: Line, persons: Person[]) => {
+  const usedPersons: string[] = [];
+  const trees: FamilyTree[] = [];
+
+  const findOldestFatherNotInTree = (id: string): string => {
+    const currentPerson = getPersonById(id, persons);
+
+    if (currentPerson?.father) {
+      if (usedPersons.includes(currentPerson.father)) {
+        return id;
+      }
+      if (!getPersonById(currentPerson.father, persons)) {
+        return id;
+      }
+      return findOldestFatherNotInTree(currentPerson.father);
+    }
+
+    return id;
+  };
+
+  const buildTreeFromFather = (id: string): FamilyTree => {
+    const currentPerson = getPersonById(id, persons);
+
+    usedPersons.push(id);
+
+    if (currentPerson?.child) {
+      return {
+        id,
+        child: (
+          currentPerson.child.filter(
+            (c) => c && getPersonById(c, persons)
+          ) as string[]
+        ).map((c) => {
+          return buildTreeFromFather(c);
+        }),
+      };
+    }
+
+    return {
+      id,
+      child: [],
+    };
+  };
+
   if (!line || !line.suite || !line.suite[0] || !line.label) {
     throw new Error("Impossible to build tree");
   }
 
-  const usedPersons: string[] = [];
+  line.suite.forEach((p) => {
+    const oldestNotInTreeId = findOldestFatherNotInTree(p as string);
+    const oldestNotInTree = getPersonById(oldestNotInTreeId, persons);
 
-  const addPersonToTree = (id: string, asc: boolean): FamilyTree => {
-    const currentPerson = getPersonById(id, persons);
-    usedPersons.push(id);
+    if (
+      oldestNotInTree?.father &&
+      usedPersons.includes(oldestNotInTree.father)
+    ) {
+      let fatherFound = false;
+      trees.some((tree) => {
+        const stack = [tree];
 
-    if (currentPerson?.father && asc) {
-      if (getPersonById(currentPerson?.father, persons)) {
-        return addPersonToTree(currentPerson.father, true);
-      } else {
-        return addPersonToTree(id, false);
+        while (stack.length && !fatherFound) {
+          let currentNode = stack.pop();
+
+          if (currentNode && currentNode.id === oldestNotInTree.father) {
+            fatherFound = true;
+            if (
+              !currentNode.child.find((child) => child.id === oldestNotInTreeId)
+            ) {
+              currentNode.child.push(buildTreeFromFather(oldestNotInTreeId));
+            }
+          }
+          if (currentNode?.child && currentNode.child.length) {
+            stack.push(...currentNode.child);
+          }
+        }
+
+        return fatherFound;
+      });
+
+      if (fatherFound) {
+        return trees;
       }
     }
-    const child = currentPerson?.child?.length
-      ? currentPerson.child.map((c) => addPersonToTree(c as string, false))
-      : [];
 
-    return {
-      id,
-      child,
-    };
-  };
+    if (!usedPersons.includes(p || "")) {
+      trees.push(buildTreeFromFather(oldestNotInTreeId));
+    }
+  });
 
-  return addPersonToTree(line.suite[0], true);
+  return trees;
 };
 
 export const Tree = () => {
@@ -57,8 +118,16 @@ export const Tree = () => {
   const neustrianLine = lines.find((line) => line?.label === "Roi de Neustrie");
 
   if (neustrianLine) {
-    const tree = buildTree(neustrianLine, persons);
+    const trees = buildTree(neustrianLine, persons);
 
-    return <TreeNode tree={tree} persons={persons}></TreeNode>;
+    return (
+      <>
+        {trees.map((t) => (
+          <TreeNode key={t.id} node={t} persons={persons}></TreeNode>
+        ))}
+      </>
+    );
   }
+
+  return <></>;
 };

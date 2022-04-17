@@ -57,6 +57,21 @@ If you need to generate GraphQL schema:
 yarn codegen
 ```
 
+## Roadmap
+
+[x] Build family tree for one line
+[ ] Build family tree for multiple lines
+[x] Display people of family tree
+[x] Display first spouse
+[ ] Add option to display other spouses
+[x] Display first spouse children
+[ ] Display others spouses children
+[ ] Display half orphan children
+[ ] Add option to change tree focus
+[ ] Display person infos
+[ ] Add person modal
+[ ] Add time line
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
